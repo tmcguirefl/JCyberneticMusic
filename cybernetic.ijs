@@ -73,16 +73,18 @@ NB. Rhythm function missing page 56
 
 NB. scli - allows the composer think in terms of single
 NB. sets of intervals as opposed to sclit
+NB. this routine sets the global scl which is needed by other
+NB. other routhines
 scli =: 3 : 0
 j =: (($y)*>.(5*TONSYS)%+/y)$y
-scl =: (|. +/\0, -|. j), 1}.+/\0,j
-scl i. 0
+SCL =: (|. +/\0, -|. j), 1}.+/\0,j   NB. Global scale of pitches
+SCL i. 0
 )
 
 showscl =: 4 : 0
 mn =. x * TONSYS
 mx =. y * TONSYS
-((scl >: mn) *. scl <: mx)# scl
+((SCL >: mn) *. SCL <: mx)# SCL
 )
 
 brk =: 4 : 0
@@ -149,10 +151,13 @@ NB. E is expand the chord by E number of tones
 NB. S is the number of notes in the chords
 NB. xpnd - expand scale into its chords
 xpnd =: 4 : 0
-N =. #x
-'E S' =. y
-z =. (N|(i. N) +/ E * i.S) { x
+'e s' =. y
+n =. #x
+z =. (i. n) +/ (e * i.s)
+z =. (n|z) { x
+z =. (":z),"1 (((1{.$z),4)$(' :  ')),"1 N2NP z
 )
+
    NB. SIGMAS are just all combinations of intervals which have
    NB. distinct notes
    NB.    12|0,+/\3 3 3  which maps 4 notes interval 3 apart 
@@ -272,13 +277,13 @@ N2POUT =: 4 : 0
 i=.0
 if. flds ~: 4 do.
 whilst. (flds-4)> i do.
- tcol =. ,((kf=0)+2*kf >: 1){(1 0 1 expansion FORS)
- kn =. tcol (,i+1+flds* i. orho)} ,kn
+ tcol =. ((kf=0)+2*kf >: 1){(1 0 1 expansion FORS)
+ kn =. tcol (i+1+flds* i. orho)}"1 kn
  kf =. (*kf)*(kf~:0)* _1+|kf
  i =. i + 1
 end.
 end.
-kn =. ' ',kn
+kn =. ' ',"1 kn
 if. y = 0 do.
  return.
 end.
@@ -288,6 +293,29 @@ kn =. ((1+* 1}.,kd){('- +')) (,_1+flds* 1}.i. _1{.$,kd)}kn
 kn =. (":0),':',(' ',kn)
 )
 
+NB. N2NP - another output routine transcribed from the original 
+NB. text
+N2NP =: 3 : 0
+n =. (_2 {. 1,1,$y)$,y
+kn =. TONSYS|n
+kf =. (kn) -/ NUM
+kf =. (kf*(|kf)=(<./"0 1 |kf) */ (#NUM)$1)
+kf =. kf,"1 TONSYS
+kf =. (1 = +/\"1 +/\"1 kf ~: 0)*kf
+kf =. (_1}. $kf)$(,kf~:0)#,kf
+kf =. (kf ~: TONSYS)*kf
+kn =. (NUM i. (kn) - kf) { NTS
+NB. flds =. 4+>./|kf
+NB. replace next statement with above if TONSYS not equal to 12
+flds =. 5
+orho =. (_1{. $kn)
+kn =. ((_1}.$kn),orho*flds)$,(,kn),.(($,kn),_1+flds)$' '
+(kn;kf;(0$0);flds; orho) N2POUT 0 
+)
+
+NB. N2PJ - a more J rendition of the above APL transcription
+NB. The code below gets rid of the 2 dimensional vectors with a 
+NB. single row.
 N2PJ =: 3 : 0
 NB. if. 0 = $,y do.
 NB.  return.
@@ -443,3 +471,6 @@ M =: M,P,P,P
 M =: M,(1 + _1{.P),_1 + ($,y){.P
 )
 
+motif =: 4 : 0
+(+/\x,y){SCL
+)
