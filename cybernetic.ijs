@@ -438,12 +438,17 @@ if. i_index = 0 do.   mxmlattr fappend fileout end.
 
 NB. melody routines
 NB. melody support routines
+
+NB. expansion j equivalent of APL expansion with '\'
 expansion =: #^:_1
+
+NB. TMP - transposes x pitches in melody y
 TMP =: 4 : 0
 k=. >./($,y),|x
 (k$y)+k$,x{.M
 )
 
+NB. BGN - transposes notes of x so they begin on pitch y
 BGN =: 4 : 0
 NB.(x - 0{x) + {. y
 if. ($x) = ($y)do.
@@ -453,11 +458,14 @@ else.
 end.
 )
 
+NB. CDNC212 - approaches target pitch x from below, y+2 steps
+NB. it repeats the interval sequence 2 1 2 as needed hence the name
    CDNC212 =: 4 : 0
 k =. (2+y)$ 2 1 2
 +/\(x- +/k),k
 )
 
+NB. DVLP2 - usual terminal session with the above routines collected as a function
 DVLP2 =: 4 : 0
 M=: P=. (1+2*$,y)$x
 P =. (1 TMP y) (1+2*i. $,y)} P
@@ -483,6 +491,87 @@ M =: M,P,P,P
 M =: M,(1 + _1{.P),_1 + ($,y){.P
 )
 
+NB. form - interactive user input routine to guide the structure of a composition
+NB. TODO implementation in J
+form =: 3 : 0
+)
+
+NB. motif - creates a passage based on intervals in a scale
 motif =: 4 : 0
 (+/\x,y){SCL
 )
+
+NB. xpos - transposes melody x so the entry in M is indexed by the first element in y
+NB. will move to the pitch in the second (last) entry in y
+NB. TODO implentation in J
+xpos =: 4 : 0
+)
+
+NB. fitrng - finds the interval needed to transpose x to the conditions in y
+NB. TODO implentation in J
+fitrng =: 4 : 0
+)
+
+NB. Harmony routines
+NB. tnsn - calculates the tension in a pitch array y
+NB. TODO implentation in J
+tnsn =: 3 : 0
+)
+
+NB. utnsn - calculates the tension in y considering the only unique pitches
+NB. TODO implentation in J
+utnsn =: 3 : 0
+)
+
+NB. uniq - returns unique entries in y
+NB. TODO implentation in J
+uniq =: ~.
+)
+
+NB. hblk - contructs all possible chords that conform to a structure array y
+NB. TODO implentation in J
+hblk =: 3 : 0
+)
+
+NB. hofm - interactive routine to harmonize melody y
+NB. TODO implentation in J
+hofm =: 3 : 0
+)
+
+NB. hofmin - handles interactive input to hofm
+NB. TODO implentation in J
+hofmin = 3 : 0
+)
+
+NB. hofmout - handles out put for hofm
+NB. TODO implentation in J
+hofmout =: 3 : 0 
+)
+
+NB. show - handles user input requests for hofm
+NB. TODO implentation in J
+show =: 4 : 0
+)
+
+NB. tprf - isolate chords in y given a preference array
+NB. TODO implentation in J
+tprf =: 4 : 0
+)
+
+NB. tcnt - helper function for tprf
+NB. TODO implentation in J
+tcnt =: 4 : 0
+)
+
+NB. Chord restriction functions
+NB. restrict alternatives of chords that differ in certain ways
+NB. TODO implentation in J
+fchng =: 4 : 0
+)
+
+fdown =: 4 : 0
+)
+
+cycle =: 4 : 0
+)
+
