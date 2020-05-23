@@ -175,7 +175,9 @@ z =. (":z),"1 (((1{.$z),4)$(' :  ')),"1 N2NP z
 NB. sigmas support function rpts finds duplicate ordinal tone seq
 rpts =: #/.~
 
-NB. i2np will map all notes into a single octave
+NB. i2np - takes a vector of notes produces the relative tones in the chromatic scale
+NB. ie. will map all notes into a single octave
+NB. TODO test this function against the APL code
 i2np =: 3 : 'TONSYS|+/\0,y'
 
 jsigmas =: 4 : 0
@@ -224,7 +226,15 @@ HS =: 4 2$4 3 3 4 4 4 5 5
 PREF =: 3 3$ 0 1 _4 1 1 _4 1 0 2
 VS =: 3 3$ 1 2 0 2 0 1 2 1 0
 
-NB. shcon
+NB. hcon - main construction routine calls: chcon, shcon, cshcon, i2np
+NB. TODO relies on interactive user input to process
+
+NB. chcon - not sure what this is doing
+NB. TODO (function does not require interactive user input)
+
+NB. shcon - not sure what this is doing
+NB. (function does not require interactive user input)
+NB. TODO test against APL equivalent
 shcon =: 4 : 0
 'IRC STR' =. y
 S0 =. 0 { STR
@@ -244,6 +254,8 @@ z=. i2np (k$y) { HS
 n2pno z+|:(|.$z)$ }. + /\0,k$x
 )
 
+NB. -----------------------------------------------------------------------
+NB. Output routines
 NB. N2P - convert numeric representation of notes to letter form
 NB. this is a direct translation of the APL Cybernetic Music routine
 NB. into J
