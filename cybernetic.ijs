@@ -505,11 +505,21 @@ NB. xpos - transposes melody x so the entry in M is indexed by the first element
 NB. will move to the pitch in the second (last) entry in y
 NB. TODO implentation in J
 xpos =: 4 : 0
+if. (0{y) < 0 do.
+ x + (_1{.y)-((0{y)+$x){x 
+else.
+ (_1{.y)+x-({.y){x
+end.
 )
 
 NB. fitrng - finds the interval needed to transpose x to the conditions in y
 NB. TODO implentation in J
 fitrng =: 4 : 0
+n =. 2{.y
+mn =. <./x
+mx =. >./x
+a =. mn,(>. 0.5*mn+mx),mx
+(0{n)-(1 + 1{n){a
 )
 
 NB. Harmony routines
