@@ -1,6 +1,8 @@
-NB. routines for cybernetic music. This is a direct translation 
-NB. from APL. It should be reworked and put in tacit form where 
-NB. possible.
+NB. routines from Cybernetic Music(CM). This is a semi-direct translation 
+NB. from APL. Where J has obvious idioms that simplify the code
+NB. I have made the changes. 
+NB. Ideally this code should be reworked and put in tacit form 
+NB. where possible.
 
 NB. Note about the APL code from the book Cybernetic Music(CM) by Jaxitron
 NB. CM tries to keep it's vectors (arrays) as 2-dimensional with usually 
@@ -73,18 +75,16 @@ NB. Rhythm function missing page 56
 
 NB. scli - allows the composer think in terms of single
 NB. sets of intervals as opposed to sclit
-NB. this routine sets the global scl which is needed by other
-NB. other routhines
 scli =: 3 : 0
 j =: (($y)*>.(5*TONSYS)%+/y)$y
-SCL =: (|. +/\0, -|. j), 1}.+/\0,j   NB. Global scale of pitches
-SCL i. 0
+scl =: (|. +/\0, -|. j), 1}.+/\0,j
+scl i. 0
 )
 
 showscl =: 4 : 0
 mn =. x * TONSYS
 mx =. y * TONSYS
-((SCL >: mn) *. SCL <: mx)# SCL
+((scl >: mn) *. scl <: mx)# scl
 )
 
 brk =: 4 : 0
@@ -121,11 +121,17 @@ scli j
 
 NB. symscl - 
 symscl =: 4 : 0
-z =: +/\0,(_1 + >./TONSYS frctn (TONSYS|x) %TONSYS)$x
+z =: +/\0,(_1 + >./ frctn (TONSYS|x) %TONSYS)$x
 ,+/\"1 z,.(($z),$y)$y
 )
 
-NB. frctn - 
+NB. frctn - provides numerator and denominator of a decimal fraction
+NB. In the APL code this is used to determine a reduced fraction
+NB. involving division by TONSYS
+NB. as such to determine a simplified fraction the original denominator
+NB. is supplied and you loop through values less than or equal to
+NB. the original denominator to calculate a simplified fraction
+NB. below is a J looping pseudocode of the original APL
 NB. frctn =: 4 : 0
 NB. i =. 1
 NB. whilest. x >: i do.
@@ -137,9 +143,13 @@ NB. end.
 NB. end.
 NB. i,z
 NB. )
-frctn =: 4 : 0
-2 x: y
-)
+
+NB. frctn - j version
+NB. don't need a denominator value in J frctn can be monadic
+NB. this uses the extended precision didatic function x:
+NB. which will return numerator and denominator in reduced form
+NB. as a vector
+frctn =: 2&x: 
 
 NB. scale =: 0 2 4 5 7 9 11
 NB. we can extract chords from this scale by the following
@@ -151,13 +161,10 @@ NB. E is expand the chord by E number of tones
 NB. S is the number of notes in the chords
 NB. xpnd - expand scale into its chords
 xpnd =: 4 : 0
-'e s' =. y
-n =. #x
-z =. (i. n) +/ (e * i.s)
-z =. (n|z) { x
-z =. (":z),"1 (((1{.$z),4)$(' :  ')),"1 N2NP z
+N =. #x
+'E S' =. y
+z =. (N|(i. N) +/ E * i.S) { x
 )
-
    NB. SIGMAS are just all combinations of intervals which have
    NB. distinct notes
    NB.    12|0,+/\3 3 3  which maps 4 notes interval 3 apart 
@@ -175,9 +182,7 @@ z =. (":z),"1 (((1{.$z),4)$(' :  ')),"1 N2NP z
 NB. sigmas support function rpts finds duplicate ordinal tone seq
 rpts =: #/.~
 
-NB. i2np - takes a vector of notes produces the relative tones in the chromatic scale
-NB. ie. will map all notes into a single octave
-NB. TODO test this function against the APL code
+NB. i2np will map all notes into a single octave
 i2np =: 3 : 'TONSYS|+/\0,y'
 
 jsigmas =: 4 : 0
@@ -226,15 +231,7 @@ HS =: 4 2$4 3 3 4 4 4 5 5
 PREF =: 3 3$ 0 1 _4 1 1 _4 1 0 2
 VS =: 3 3$ 1 2 0 2 0 1 2 1 0
 
-NB. hcon - main construction routine calls: chcon, shcon, cshcon, i2np
-NB. TODO relies on interactive user input to process
-
-NB. chcon - not sure what this is doing
-NB. TODO (function does not require interactive user input)
-
-NB. shcon - not sure what this is doing
-NB. (function does not require interactive user input)
-NB. TODO test against APL equivalent
+NB. shcon
 shcon =: 4 : 0
 'IRC STR' =. y
 S0 =. 0 { STR
@@ -254,8 +251,6 @@ z=. i2np (k$y) { HS
 n2pno z+|:(|.$z)$ }. + /\0,k$x
 )
 
-NB. -----------------------------------------------------------------------
-NB. Output routines
 NB. N2P - convert numeric representation of notes to letter form
 NB. this is a direct translation of the APL Cybernetic Music routine
 NB. into J
@@ -289,13 +284,13 @@ N2POUT =: 4 : 0
 i=.0
 if. flds ~: 4 do.
 whilst. (flds-4)> i do.
- tcol =. ((kf=0)+2*kf >: 1){(1 0 1 expansion FORS)
- kn =. tcol (i+1+flds* i. orho)}"1 kn
+ tcol =. ,((kf=0)+2*kf >: 1){(1 0 1 expansion FORS)
+ kn =. tcol (,i+1+flds* i. orho)} ,kn
  kf =. (*kf)*(kf~:0)* _1+|kf
  i =. i + 1
 end.
 end.
-kn =. ' ',"1 kn
+kn =. ' ',kn
 if. y = 0 do.
  return.
 end.
@@ -305,29 +300,6 @@ kn =. ((1+* 1}.,kd){('- +')) (,_1+flds* 1}.i. _1{.$,kd)}kn
 kn =. (":0),':',(' ',kn)
 )
 
-NB. N2NP - another output routine transcribed from the original 
-NB. text
-N2NP =: 3 : 0
-n =. (_2 {. 1,1,$y)$,y
-kn =. TONSYS|n
-kf =. (kn) -/ NUM
-kf =. (kf*(|kf)=(<./"0 1 |kf) */ (#NUM)$1)
-kf =. kf,"1 TONSYS
-kf =. (1 = +/\"1 +/\"1 kf ~: 0)*kf
-kf =. (_1}. $kf)$(,kf~:0)#,kf
-kf =. (kf ~: TONSYS)*kf
-kn =. (NUM i. (kn) - kf) { NTS
-NB. flds =. 4+>./|kf
-NB. replace next statement with above if TONSYS not equal to 12
-flds =. 5
-orho =. (_1{. $kn)
-kn =. ((_1}.$kn),orho*flds)$,(,kn),.(($,kn),_1+flds)$' '
-(kn;kf;(0$0);flds; orho) N2POUT 0 
-)
-
-NB. N2PJ - a more J rendition of the above APL transcription
-NB. The code below gets rid of the 2 dimensional vectors with a 
-NB. single row.
 N2PJ =: 3 : 0
 NB. if. 0 = $,y do.
 NB.  return.
@@ -438,17 +410,12 @@ if. i_index = 0 do.   mxmlattr fappend fileout end.
 
 NB. melody routines
 NB. melody support routines
-
-NB. expansion j equivalent of APL expansion with '\'
 expansion =: #^:_1
-
-NB. TMP - transposes x pitches in melody y
 TMP =: 4 : 0
 k=. >./($,y),|x
 (k$y)+k$,x{.M
 )
 
-NB. BGN - transposes notes of x so they begin on pitch y
 BGN =: 4 : 0
 NB.(x - 0{x) + {. y
 if. ($x) = ($y)do.
@@ -458,14 +425,11 @@ else.
 end.
 )
 
-NB. CDNC212 - approaches target pitch x from below, y+2 steps
-NB. it repeats the interval sequence 2 1 2 as needed hence the name
    CDNC212 =: 4 : 0
 k =. (2+y)$ 2 1 2
 +/\(x- +/k),k
 )
 
-NB. DVLP2 - usual terminal session with the above routines collected as a function
 DVLP2 =: 4 : 0
 M=: P=. (1+2*$,y)$x
 P =. (1 TMP y) (1+2*i. $,y)} P
@@ -491,97 +455,4 @@ M =: M,P,P,P
 M =: M,(1 + _1{.P),_1 + ($,y){.P
 )
 
-NB. form - interactive user input routine to guide the structure of a composition
-NB. TODO implementation in J
-form =: 3 : 0
-)
-
-NB. motif - creates a passage based on intervals in a scale
-motif =: 4 : 0
-(+/\x,y){SCL
-)
-
-NB. xpos - transposes melody x so the entry in M is indexed by the first element in y
-NB. will move to the pitch in the second (last) entry in y
-NB. TODO implentation in J
-xpos =: 4 : 0
-if. (0{y) < 0 do.
- x + (_1{.y)-((0{y)+$x){x 
-else.
- (_1{.y)+x-({.y){x
-end.
-)
-
-NB. fitrng - finds the interval needed to transpose x to the conditions in y
-NB. TODO implentation in J
-fitrng =: 4 : 0
-n =. 2{.y
-mn =. <./x
-mx =. >./x
-a =. mn,(>. 0.5*mn+mx),mx
-(0{n)-(1 + 1{n){a
-)
-
-NB. Harmony routines
-NB. tnsn - calculates the tension in a pitch array y
-NB. TODO implentation in J
-tnsn =: 3 : 0
-)
-
-NB. utnsn - calculates the tension in y considering the only unique pitches
-NB. TODO implentation in J
-utnsn =: 3 : 0
-)
-
-NB. uniq - returns unique entries in y
-NB. TODO implentation in J
-uniq =: ~.
-)
-
-NB. hblk - contructs all possible chords that conform to a structure array y
-NB. TODO implentation in J
-hblk =: 3 : 0
-)
-
-NB. hofm - interactive routine to harmonize melody y
-NB. TODO implentation in J
-hofm =: 3 : 0
-)
-
-NB. hofmin - handles interactive input to hofm
-NB. TODO implentation in J
-hofmin = 3 : 0
-)
-
-NB. hofmout - handles out put for hofm
-NB. TODO implentation in J
-hofmout =: 3 : 0 
-)
-
-NB. show - handles user input requests for hofm
-NB. TODO implentation in J
-show =: 4 : 0
-)
-
-NB. tprf - isolate chords in y given a preference array
-NB. TODO implentation in J
-tprf =: 4 : 0
-)
-
-NB. tcnt - helper function for tprf
-NB. TODO implentation in J
-tcnt =: 4 : 0
-)
-
-NB. Chord restriction functions
-NB. restrict alternatives of chords that differ in certain ways
-NB. TODO implentation in J
-fchng =: 4 : 0
-)
-
-fdown =: 4 : 0
-)
-
-cycle =: 4 : 0
-)
 
