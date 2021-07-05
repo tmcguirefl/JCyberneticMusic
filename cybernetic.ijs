@@ -33,6 +33,8 @@ DGTS =: '0 123456789._'
 CLSNDX =: 0 0 1 1 1 2 2 3 3 3 3 4 4 4 5 5 5 6 6 6 6 6 7 7 7 8 8 8 8 9 9 9 10 11 11 11
 CLSNM =: 12 6$'-MI7  ','-MA7  ','MI7   ','MI    ','+MI   ','LG7   ','MA7   ','+7    ','+MA7  ','7+3   ','MA7+3 ','+MA7+3'
 
+NB. KER introduced as a kernal of tonal selections on page 136
+KER =: 2 1 2
 NB. Formatting functions
    fmt =: 8!:0
    fmt1=: 8!:1
@@ -54,9 +56,7 @@ NB. 10	minor seventh		(augmented sixth)
 NB. 11	major seventh		(diminished octave)
 NB. 12	perfect octave		(augmented seventh)
 
-   int =: 3 : 0
-(1 }. y) - _1 }. y
-)
+   int =: 13 : '(1 }. y) - _1 }. y'
 
 NB. Found in Chapter 7 on page 54 and transcribed here
 NB. resultant creates the Schillinger interference pattern for 
@@ -77,14 +77,14 @@ NB. scli - allows the composer think in terms of single
 NB. sets of intervals as opposed to sclit
 scli =: 3 : 0
 j =: (($y)*>.(5*TONSYS)%+/y)$y
-scl =: (|. +/\0, -|. j), 1}.+/\0,j
-scl i. 0
+SCL =: (|. +/\0, -|. j), 1}.+/\0,j
+SCL i. 0
 )
 
 showscl =: 4 : 0
 mn =. x * TONSYS
 mx =. y * TONSYS
-((scl >: mn) *. scl <: mx)# scl
+((SCL >: mn) *. SCL <: mx)# SCL
 )
 
 brk =: 4 : 0
@@ -196,7 +196,7 @@ selection =. (1 =>./"1 rpts"1 allchords)
 (selection#intervals);(selection#allchords);n2pno (selection#allchords)
 )
  
-sigmaout =: '/Users/tmcguire/musicXML/sigma.out'
+sigmaout =: '~/musicXML/sigma.out'
 sigmas =: 4 : 0
 S =. x
 A =. |: 0 1$y
@@ -455,4 +455,36 @@ M =: M,P,P,P
 M =: M,(1 + _1{.P),_1 + ($,y){.P
 )
 
+NB. motif - creating a 'motif' from an externally defined global scale
+NB. x - is the starting index in the scale array
+NB. y - is the relative tone steps to choose a set of notes
+NB. this establishes 
+NB. SCL the externally defined scale is usually set with scli or sclit
+motif =: 4 : 0
+(+/\x,y){SCL
+)
 
+NB. transposes melody (x arg) by interval denoted by y arg 
+xpos =: 4 : 0
+if. 0 > 0{y do.
+ x+(_1{.y)- ((0{y)+$x){x
+else.
+  (_1{.y)+x-(1{.y){x
+end.
+)
+
+NB. fitrng - fit range
+NB. needs verification against APL
+fitrng =: 4 : 0
+N =. 1{. y
+min =. <./x
+max =. >./x
+a =. min, (>. 0.5*min%max),max
+(0{N) -(1+1{N){a
+)
+
+NB. tnsn - cord tension
+NB. needs to be verified agains an apl version
+tnsn =: 3 : 0
+10#.+/(1 11 2 10)=/TONSYS|(,(i.$y)>/i.$y)#,y-/y
+)
