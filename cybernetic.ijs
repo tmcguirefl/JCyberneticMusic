@@ -464,7 +464,6 @@ motif =: 4 : 0
 (+/\x,y){SCL
 )
 
-NB. transposes melody (x arg) by interval denoted by y arg 
 xpos =: 4 : 0
 if. 0 > 0{y do.
  x+(_1{.y)- ((0{y)+$x){x
@@ -473,8 +472,6 @@ else.
 end.
 )
 
-NB. fitrng - fit range
-NB. needs verification against APL
 fitrng =: 4 : 0
 N =. 1{. y
 min =. <./x
@@ -483,8 +480,30 @@ a =. min, (>. 0.5*min%max),max
 (0{N) -(1+1{N){a
 )
 
-NB. tnsn - cord tension
-NB. needs to be verified agains an apl version
+NB. tnsn works to the apl routine in CM page 168
+NB. however it does not reproduce the tension diagramed in Fig 11-7
+NB. if you calculate (tnsn 0 5 11 <semitone 0-11>) - tnsn 0 5 11
+NB. for each of the semitones you will get the following sequence
+NB. 1000 1010 10 1 100 0 1000 10 0 1 101 100
+NB. it does however work for the traids on page 167
 tnsn =: 3 : 0
-10#.+/(1 11 2 10)=/TONSYS|(,(i.$y)>/i.$y)#,y-/y
+10#.+/"1 (1 11 2 10)=/TONSYS|(, >/~i.$y)#,-/~y
+)
+
+NB. utnsn produces a tension sequence a little closer to the book
+NB. if you calculate (utnsn 0 5 11 <semitone 0-11>) - utnsn 0 5 11
+NB. you get:
+NB. 0 1010 10 1 100 0 1000 10 0 1 101 0
+NB.         ^ 
+NB. the 10 in the 3rd position above (J index 2) is 101 in fig 11-7
+utnsn =: 3 : 0
+10#.+/"1 (1 11 2 10)=/TONSYS|(, >/~i.$V)#,-/~V=.~.y
+)
+
+NB. uniq - is an interesting implementation from an array processing 
+NB. perspective. This essentially is the ~. (nub) operator in J
+NB. APL has the union symbol; its monadic definition is the unique
+NB. operator returning the list of unique elements in an array
+uniq =: 3 : 0
+((i. $ V) e. V i. V)# V =. y
 )
