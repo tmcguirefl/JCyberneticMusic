@@ -276,9 +276,9 @@ kn =. ((_1}.$kn),orho*flds)$,(,kn),.(($,kn),_1+flds)$' '
 (kn;kf;kd;flds; orho) N2POUT 1
 )
 
-NB. N2POUT - finishing routine that uses the Local scoping rules in
-NB. J. The calling routine sets up the values of kf, kn, kd, flds,
-NB. orho etc 
+NB. N2POUT - finishing routine that uses the Local scoping rules in APL
+NB. IN J this is simulated by the calling routine passing
+NB. the values of kf, kn, kd, flds, orho etc 
 N2POUT =: 4 : 0
 'kn kf kd flds orho' =. x
 i=.0
@@ -321,6 +321,7 @@ orho =. _1 {.$kn
 kn =. (orho*flds)$,(,kn),.(($,kn),_1+flds)$' '
 (kn;kf;kd;flds; orho) N2POUT 1
 )
+
 
 n2pno =: 3 : '(1 3*$y)$,(TONSYS|y) { (TONSYS,3) $ NOTENAME'
 
@@ -387,26 +388,38 @@ pitch =. (TONSYS|y) { _3 <\NOTENAME
 
 NB. What would be nice would be an XML language that could be 
 NB. loaded into a browser to display output as a musical score
-
+NB. This can now be done see musicxml.ijs code
+NB. https://www.soundslice.com is the site that will do this
+NB.
+NB. p2xml is obsolete
+NB. it relied on files to hold static templates used to piece together
+NB. the xml
+NB.
+NB. this has been replaced by the funciton CM2Mxml in musicxml.ijs
+NB. the static portions are now multiline nouns
+NB. the processing minimizes the looping down at the measure level
+NB. -------------------------
+NB. OBSOLETE code follows in comments
 NB. Pitch to musicXML
 NB. Given pitch name just do key of C translation to XML for now
-p2xml =: 3 : 0
-   fileout =. '/Users/tmcguire/musicXML/musicout.xml'
-   mxmlhead =.  freads '/Users/tmcguire/musicXML/basemusic.xml'
-   mxmlattr =.  freads '/Users/tmcguire/musicXML/measure.xml'
-   mxmlendmeasure =.  freads '/Users/tmcguire/musicXML/endmeasure.xml'
-   mxmlendmusic =.  freads '/Users/tmcguire/musicXML/endmusic.xml'
-   mxmlhead fwrites fileout
-   for_i. |:y do.
-     'o p' =. i
-     ('    <measure number="',(": i_index + 1),'">') fappends fileout
-if. i_index = 0 do.   mxmlattr fappend fileout end.
-        ('      <note>',LF,'       <pitch>') fappends fileout
-          ('      <step>',p,'</step>') fappends fileout
-   mxmlendmeasure fappends fileout
-   end.
-   mxmlendmusic fappends fileout
-)
+NB. p2xml =: 3 : 0
+NB.    fileout =. '~/musicXML/musicout.xml'
+NB.    mxmlhead =.  freads '~/musicXML/basemusic.xml'
+NB.    mxmlattr =.  freads '~/musicXML/measure.xml'
+NB.    mxmlendmeasure =.  freads '~/musicXML/endmeasure.xml'
+NB.    mxmlendmusic =.  freads '~/musicXML/endmusic.xml'
+NB.    mxmlhead fwrites fileout
+NB.    for_i. |:y do.
+NB.      'o p' =. i
+NB.      ('    <measure number="',(": i_index + 1),'">') fappends fileout
+NB. if. i_index = 0 do.   mxmlattr fappend fileout end.
+NB.         ('      <note>',LF,'       <pitch>') fappends fileout
+NB.           ('      <step>',p,'</step>') fappends fileout
+NB.    mxmlendmeasure fappends fileout
+NB.    end.
+NB.    mxmlendmusic fappends fileout
+NB. )
+NB. -------------------------
 
 NB. melody routines
 NB. melody support routines
