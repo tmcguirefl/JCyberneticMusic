@@ -520,3 +520,12 @@ NB. operator returning the list of unique elements in an array
 uniq =: 3 : 0
 ((i. $ V) e. V i. V)# V =. y
 )
+
+NB. example SA =: 2 2 $ 4 3 3 4
+NB. HBLK - produces a harmonic structure block hence HBLK
+hblk =: 3 : 0
+SA =. y
+z =. (TONSYS,${.SA)$SA
+z =. +/\"1 (2 1 0|: ((1,(1{.$SA),TONSYS)$ i.TONSYS)),"1 z
+z =. ,/ (1 2 0|:(1,TONSYS,(1{.$SA))$ i. {.$ SA),"1 TONSYS|z
+)
